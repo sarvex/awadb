@@ -22,7 +22,7 @@ def print_includes():
         if d and d not in unique_dirs:
             unique_dirs.append(d)
 
-    print(" ".join("-I" + d for d in unique_dirs))
+    print(" ".join(f"-I{d}" for d in unique_dirs))
 
 
 def main():

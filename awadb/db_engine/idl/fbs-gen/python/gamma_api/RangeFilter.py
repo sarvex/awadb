@@ -27,9 +27,7 @@ class RangeFilter(object):
     # RangeFilter
     def Field(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+        return self._tab.String(o + self._tab.Pos) if o != 0 else None
 
     # RangeFilter
     def LowerValue(self, j):
@@ -49,9 +47,7 @@ class RangeFilter(object):
     # RangeFilter
     def LowerValueLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # RangeFilter
     def LowerValueIsNone(self):
@@ -76,9 +72,7 @@ class RangeFilter(object):
     # RangeFilter
     def UpperValueLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # RangeFilter
     def UpperValueIsNone(self):

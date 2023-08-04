@@ -29,8 +29,7 @@ def Test_EmbeddingText(awadb_client):
 
     query = "The man is happy"
 
-    results = awadb_client.Search(query, 3)
-    return results
+    return awadb_client.Search(query, 3)
 
 
 def Test_Vector1(awadb_client):

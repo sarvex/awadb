@@ -40,9 +40,7 @@ class Response(object):
     # Response
     def ResultsLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # Response
     def ResultsIsNone(self):
@@ -52,9 +50,7 @@ class Response(object):
     # Response
     def OnlineLogMessage(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+        return self._tab.String(o + self._tab.Pos) if o != 0 else None
 
 def Start(builder): builder.StartObject(2)
 def ResponseStart(builder):

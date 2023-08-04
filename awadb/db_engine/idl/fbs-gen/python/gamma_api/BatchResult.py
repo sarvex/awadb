@@ -42,9 +42,7 @@ class BatchResult(object):
     # BatchResult
     def CodesLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # BatchResult
     def CodesIsNone(self):
@@ -62,9 +60,7 @@ class BatchResult(object):
     # BatchResult
     def MsgsLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # BatchResult
     def MsgsIsNone(self):

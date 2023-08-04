@@ -43,15 +43,10 @@ def typeof(variate):
     elif isinstance(variate, float):
         v_type = FieldDataType.FLOAT
     elif isinstance(variate, list):
-        is_vector = True
-        for element in variate:
-            if not (
-                isinstance(element, int)
-                or isinstance(element, float)
-                or isinstance(element, np.float32)
-            ):
-                is_vector = False
-                break
+        is_vector = all(
+            isinstance(element, (int, float, np.float32))
+            for element in variate
+        )
         if is_vector:
             v_type = FieldDataType.VECTOR
     elif type(variate).__name__ == "ndarray":
@@ -69,11 +64,7 @@ class AwaEmbedding:
     def __init__(
         self, 
         model_name: Optional[str] = None):
-        if model_name is None:
-            self.model_name = "mpnet-v2"
-        else:
-            self.model_name = model_name
-
+        self.model_name = "mpnet-v2" if model_name is None else model_name
         if self.model_name == "OpenAI":
             from awadb.awa_embedding.openai import OpenAIEmbeddings
             self.llm = OpenAIEmbeddings()
@@ -105,8 +96,8 @@ class AwaEmbedding:
 class Client:
     def __init__(self, root_dir="."):
         self.root_dir = root_dir
-        log_dir = root_dir + "/log"
-        data_dir = root_dir + "/data"
+        log_dir = f"{root_dir}/log"
+        data_dir = f"{root_dir}/data"
         if not os.path.isdir(log_dir):
             os.makedirs(log_dir)
         if not os.path.isdir(data_dir):
@@ -129,7 +120,7 @@ class Client:
         self.tables_embedding_text_fid_no = {}
         self.english_word_stemmer = PorterStemmer()
 
-        existed_meta_file = data_dir + "/tables.meta"
+        existed_meta_file = f"{data_dir}/tables.meta"
         if os.path.isfile(existed_meta_file):
             self.Read()
 
@@ -138,8 +129,6 @@ class Client:
         self.model_name = "mpnet-v2"
 
     def Write(self):
-        tables_meta = {}
-        tables_meta["fields_check"] = self.tables_fields_check
         tables_types = {}
         for table_name in self.tables_fields_type:
             fields_type_list = []
@@ -157,23 +146,22 @@ class Client:
 
             tables_types[table_name] = fields_type_list
 
-        tables_meta["fields_type"] = tables_types
-        tables_meta["fields_name"] = self.tables_fields_names
-        tables_meta["vector_field_name"] = self.tables_vector_field_name
-        tables_meta["embedding_field_no"] = self.tables_embedding_text_fid_no
-
-        tables_meta["doc_count"] = self.tables_doc_count
-        tables_meta["has_obvious_primary_key"] = self.tables_have_obvious_primary_key
-        tables_meta["primary_key_fid_no"] = self.tables_primary_key_fid_no
-
+        tables_meta = {
+            "fields_check": self.tables_fields_check,
+            "fields_type": tables_types,
+            "fields_name": self.tables_fields_names,
+            "vector_field_name": self.tables_vector_field_name,
+            "embedding_field_no": self.tables_embedding_text_fid_no,
+            "doc_count": self.tables_doc_count,
+            "has_obvious_primary_key": self.tables_have_obvious_primary_key,
+            "primary_key_fid_no": self.tables_primary_key_fid_no,
+        }
         tables_dict = {}
         for key in self.tables_attr:
-            table_attr_info = {}
             fields_info = self.tables_attr[key].Fields()
             fields_list = []
             for field_info in fields_info:
-                fields_dict = {}
-                fields_dict["name"] = field_info.name
+                fields_dict = {"name": field_info.name}
                 if field_info.data_type == awa.DataType.INT:
                     fields_dict["data_type"] = "INT"
                 elif field_info.data_type == awa.DataType.FLOAT:
@@ -185,13 +173,10 @@ class Client:
 
                 fields_dict["is_index"] = field_info.is_index
                 fields_list.append(fields_dict)
-            table_attr_info["fields_info"] = fields_list
-
             vec_fields_list = []
             vec_fields_info = self.tables_attr[key].VectorInfos()
             for vec_field_info in vec_fields_info:
-                vec_fields_dict = {}
-                vec_fields_dict["name"] = vec_field_info.name
+                vec_fields_dict = {"name": vec_field_info.name}
                 if vec_field_info.data_type == awa.DataType.INT:
                     vec_fields_dict["data_type"] = "INT"
                 elif vec_field_info.data_type == awa.DataType.FLOAT:
@@ -207,17 +192,17 @@ class Client:
                 vec_fields_dict["store_type"] = vec_field_info.store_type
                 vec_fields_dict["store_param"] = vec_field_info.store_param
                 vec_fields_list.append(vec_fields_dict)
-            table_attr_info["vec_fields"] = vec_fields_list
+            table_attr_info = {"fields_info": fields_list, "vec_fields": vec_fields_list}
             tables_dict[key] = table_attr_info
 
         tables_meta["tables_info"] = tables_dict
 
-        created_table_path = self.root_dir + "/data/tables.meta"
+        created_table_path = f"{self.root_dir}/data/tables.meta"
         with open(created_table_path, "w", encoding="unicode_escape") as f:
             json.dump(tables_meta, f)
 
     def Read(self):
-        created_table_path = self.root_dir + "/data/tables.meta"
+        created_table_path = f"{self.root_dir}/data/tables.meta"
         with open(created_table_path, "r", encoding="unicode_escape") as f:
             tables_meta = json.load(fp=f)
 
@@ -294,11 +279,11 @@ class Client:
             raise NameError("Could not find this model: ", model_name)
 
         if table_name in self.tables:
-            print("Table %s exist! Please directly Use(%s)" % (table_name, table_name))
+            print(f"Table {table_name} exist! Please directly Use({table_name})")
             return False
-        log_dir = self.root_dir + "/log/"
+        log_dir = f"{self.root_dir}/log/"
         log_dir = log_dir + table_name
-        data_dir = self.root_dir + "/data/"
+        data_dir = f"{self.root_dir}/data/"
         data_dir = data_dir + table_name
         new_table = awa.Init(log_dir, data_dir)
         self.tables[table_name] = new_table
@@ -321,8 +306,8 @@ class Client:
                 return True
             return False
 
-        if table_name is not None and (not table_name in self.tables):
-            print("Table %s not exist!" % table_name)
+        if table_name not in self.tables:
+            print(f"Table {table_name} not exist!")
             return False
         self.using_table_engine = self.tables[table_name]
         if self.using_table_engine is None:
@@ -333,22 +318,20 @@ class Client:
         return False
 
     def ListAllTables(self) -> List[str]:
-        results: List[str] = []
-        for table in self.tables_fields_check:
-            results.append(table)
+        results: List[str] = list(self.tables_fields_check)
         return results
 
     def GetCurrentTable(self) -> str:
         return self.using_table_name
 
     def Load(self, table_name) -> bool:
-        if not table_name in self.tables:
+        if table_name not in self.tables:
             self.Create(table_name)
 
         self.using_table_name = table_name
         self.using_table_engine = self.tables[table_name]
         if not awa.LoadFromLocal(self.using_table_engine):
-            print("Table %s can not be loaded!" % self.using_table_name)
+            print(f"Table {self.using_table_name} can not be loaded!")
             return False
         return True
 
@@ -364,22 +347,22 @@ class Client:
                 )
                 raise error_msg
             fields_type[field_idx] = f_type
-        else:
-            if self.tables_fields_type[self.using_table_name][field_idx] != f_type:
-                error_msg = Exception(
-                    "No. %d field data type not %d, should %d!"
-                    % (
-                        field_idx,
-                        f_type,
-                        self.tables_fields_type[self.using_table_name][field_idx],
-                    )
+        elif self.tables_fields_type[self.using_table_name][field_idx] != f_type:
+            error_msg = Exception(
+                "No. %d field data type not %d, should %d!"
+                % (
+                    field_idx,
+                    f_type,
+                    self.tables_fields_type[self.using_table_name][field_idx],
                 )
-                raise error_msg
-            elif field_name != self.key_confirmed_name and (
-                not (field_name in self.tables_fields_names[self.using_table_name])
-            ):
-                error_msg = Exception("Field name '%s' not exist!" % field_name)
-                raise error_msg
+            )
+            raise error_msg
+        elif (
+            field_name != self.key_confirmed_name
+            and field_name not in self.tables_fields_names[self.using_table_name]
+        ):
+            error_msg = Exception(f"Field name '{field_name}' not exist!")
+            raise error_msg
 
         return f_type
 
@@ -477,7 +460,7 @@ class Client:
             True or False.
         """
 
-        if self.using_table_name == "" or len(ids) == 0:
+        if self.using_table_name == "" or not ids:
             print("Please specify table name and primary keys of the table!")
             return False
 
@@ -536,7 +519,6 @@ class Client:
             Documents which satisfy the input conditions.
         """
 
-        DEFAULT_LIMIT = 5
         docs_detail = []
         if self.using_table_name == "":
             print("Please specify the table name!")
@@ -560,6 +542,7 @@ class Client:
             if limit is not None:
                 req.SetTopN(limit)
             else:
+                DEFAULT_LIMIT = 5
                 req.SetTopN(DEFAULT_LIMIT)
             req.SetBruteForceSearch(1)
             default_retrieval_type = '{"metric_type":"InnerProduct"}'
@@ -597,7 +580,7 @@ class Client:
                             not_include_fields is not None
                             and name in not_include_fields
                         ):
-                            i = i + 1
+                            i += 1
                             continue
                         f_type = self.tables_fields_type[self.using_table_name][
                             self.tables_fields_names[self.using_table_name][name]
@@ -619,12 +602,12 @@ class Client:
                                 each_vec_data = vec_data[vec_index]
                                 # for each_vec_data in vec_data:
                                 vec_result.append(each_vec_data)
-                                vec_index = vec_index + 1
+                                vec_index += 1
                             item_detail[name] = vec_result
-                        i = i + 1
+                        i += 1
                     docs_detail.append(item_detail)
-                    item_index = item_index + 1
-                search_result_index = search_result_index + 1
+                    item_index += 1
+                search_result_index += 1
             return docs_detail
 
         doc_results = awa.DocsMap()
@@ -645,7 +628,7 @@ class Client:
                 field = doc_results[key_id].TableFields()[field_index]
                 # for field in doc_results[key_id].TableFields():
                 if not_include_fields is not None and field.name in not_include_fields:
-                    field_index = field_index + 1
+                    field_index += 1
                     continue
                 if field.datatype == awa.DataType.INT:
                     int_value = int(field.value)
@@ -655,14 +638,14 @@ class Client:
                     doc_detail[field.name] = float_value
                 elif field.datatype == awa.DataType.STRING:
                     doc_detail[field.name] = field.value
-                field_index = field_index + 1
+                field_index += 1
 
             field_index = 0
             while field_index < doc_results[key_id].VectorFields().__len__():
                 field = doc_results[key_id].VectorFields()[field_index]
                 # for field in doc_results[key_id].VectorFields():
                 if not_include_fields is not None and field.name in not_include_fields:
-                    field_index = field_index + 1
+                    field_index += 1
                     continue
                 if field.datatype == awa.DataType.VECTOR:
                     vec_data = awa.FloatVec()
@@ -677,9 +660,9 @@ class Client:
                         each_vec_data = vec_data[vec_index]
                         # for each_vec_data in vec_data:
                         vec_result.append(each_vec_data)
-                        vec_index = vec_index + 1
+                        vec_index += 1
                     doc_detail[field.name] = vec_result
-                field_index = field_index + 1
+                field_index += 1
 
             docs_detail.append(doc_detail)
         return docs_detail

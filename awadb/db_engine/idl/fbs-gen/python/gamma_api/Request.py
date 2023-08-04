@@ -61,9 +61,7 @@ class Request(object):
     # Request
     def VecFieldsLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # Request
     def VecFieldsIsNone(self):
@@ -81,9 +79,7 @@ class Request(object):
     # Request
     def FieldsLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # Request
     def FieldsIsNone(self):
@@ -106,9 +102,7 @@ class Request(object):
     # Request
     def RangeFiltersLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # Request
     def RangeFiltersIsNone(self):
@@ -131,9 +125,7 @@ class Request(object):
     # Request
     def TermFiltersLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # Request
     def TermFiltersIsNone(self):
@@ -143,9 +135,7 @@ class Request(object):
     # Request
     def RetrievalParams(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+        return self._tab.String(o + self._tab.Pos) if o != 0 else None
 
     # Request
     def HasRank(self):
@@ -157,9 +147,7 @@ class Request(object):
     # Request
     def OnlineLogLevel(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+        return self._tab.String(o + self._tab.Pos) if o != 0 else None
 
     # Request
     def MultiVectorRank(self):

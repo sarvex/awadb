@@ -18,10 +18,10 @@ class HuggingFaceEmbeddings(AwaEmbedding):
 
     def Embedding(self, sentence):
         tokens = []
-        if self.tokenizer != None:
-            tokens = self.tokenizer.tokenize(sentence)
-        else:
+        if self.tokenizer is None:
             tokens.append(sentence)
+        else:
+            tokens = self.tokenizer.tokenize(sentence)
         return self.model.encode(tokens[0])
 
     def EmbeddingBatch(
@@ -29,7 +29,5 @@ class HuggingFaceEmbeddings(AwaEmbedding):
         texts: Iterable[str],
         **kwargs: Any,
     ) -> List[List[float]]:
-        results: List[List[float]] = []
-        for text in texts:
-            results.append(self.model.encode(text))
+        results: List[List[float]] = [self.model.encode(text) for text in texts]
         return results

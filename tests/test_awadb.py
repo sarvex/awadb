@@ -66,8 +66,8 @@ def Test_Vector2(awadb_client):
     awadb_client.Add([{'primary':'209'}, {'name':'ho'}, {'gender':'male'}, {'age':28}, 'what', 'doing', [1, 3.4, 2]])
 
 def Test_Load(awadb_client):
-    ret = awadb_client.Load('testdb3')
-    if ret : print('awadb load table success')
+    if ret := awadb_client.Load('testdb3'):
+        if ret : print('awadb load table success')
     else:
         print('awadb load table failed')
 

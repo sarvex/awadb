@@ -126,16 +126,13 @@ class Pybind11Extension(_Extension):
         # Include the installed package pybind11 headers
         if include_pybind11:
             # If using setup_requires, this fails the first time - that's okay
-            try:
+            with contextlib.suppress(ImportError):
                 import pybind11
 
                 pyinc = pybind11.get_include()
 
                 if pyinc not in self.include_dirs:
                     self.include_dirs.append(pyinc)
-            except ImportError:
-                pass
-
         # Have to use the accessor manually to support Python 2 distutils
         Pybind11Extension.cxx_std.__set__(self, cxx_std)
 
@@ -195,7 +192,7 @@ class Pybind11Extension(_Extension):
             current_macos = tuple(int(x) for x in platform.mac_ver()[0].split(".")[:2])
             desired_macos = (10, 9) if level < 17 else (10, 14)
             macos_string = ".".join(str(x) for x in min(current_macos, desired_macos))
-            macosx_min = "-mmacosx-version-min=" + macos_string
+            macosx_min = f"-mmacosx-version-min={macos_string}"
             cflags += [macosx_min]
             ldflags += [macosx_min]
 
@@ -334,12 +331,11 @@ def intree_extensions(paths, package_dir=None):
                     relname, _ = os.path.splitext(os.path.relpath(path, parent))
                     qualified_name = relname.replace(os.path.sep, ".")
                     if prefix:
-                        qualified_name = prefix + "." + qualified_name
+                        qualified_name = f"{prefix}.{qualified_name}"
                     exts.append(Pybind11Extension(qualified_name, [path]))
             if not found:
                 raise ValueError(
-                    "path {} is not a child of any of the directories listed "
-                    "in 'package_dir' ({})".format(path, package_dir)
+                    f"path {path} is not a child of any of the directories listed in 'package_dir' ({package_dir})"
                 )
     return exts
 

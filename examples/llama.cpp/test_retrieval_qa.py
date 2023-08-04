@@ -30,50 +30,50 @@ qa.run("流浪地球讲的什么故事?")
 
 start = time.time()
 query = "流浪地球讲的什么故事?"
-print("问题: %s" % query)
-print("答案:%s" % qa.run(query))
+print(f"问题: {query}")
+print(f"答案:{qa.run(query)}")
 end = time.time()
 print("耗时: %f秒\n" % (end - start))
 
 start = time.time()
 query = "太空电梯是什么?"
-print("问题: %s" % query)
-print("答案:%s" % qa.run(query))
+print(f"问题: {query}")
+print(f"答案:{qa.run(query)}")
 end = time.time()
 print("耗时: %f秒\n" % (end - start))
 
 start = time.time()
 query = "地球能逃出太阳系以外吗?"
-print("问题: %s" % query)
-print("答案:%s" % qa.run(query))
+print(f"问题: {query}")
+print(f"答案:{qa.run(query)}")
 end = time.time()
 print("耗时: %f秒\n" % (end - start))
 
 start = time.time()
 query = "流浪地球电影中主要角色是哪几个?"
-print("问题: %s" % query)
-print("答案:%s" % qa.run(query))
+print(f"问题: {query}")
+print(f"答案:{qa.run(query)}")
 end = time.time()
 print("耗时: %f秒\n" % (end - start))
 
 start = time.time()
 query = "流浪地球作者是谁?"
-print("问题: %s" % query)
-print("答案:%s" % qa.run(query))
+print(f"问题: {query}")
+print(f"答案:{qa.run(query)}")
 end = time.time()
 print("耗时: %f秒\n" % (end - start))
 
 
 start = time.time()
 query = "流浪地球票房怎么样?"
-print("问题: %s" % query)
-print("答案:%s" % qa.run(query))
+print(f"问题: {query}")
+print(f"答案:{qa.run(query)}")
 end = time.time()
 print("耗时: %f秒\n" % (end - start))
 
 start = time.time()
 query = "流浪地球值得看吗?"
-print("问题: %s" % query)
-print("答案:%s" % qa.run(query))
+print(f"问题: {query}")
+print(f"答案:{qa.run(query)}")
 end = time.time()
 print("耗时: %f秒\n" % (end - start))

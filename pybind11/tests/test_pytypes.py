@@ -184,8 +184,9 @@ def test_bytes(doc):
     assert m.bytes_from_string().decode() == "foo"
     assert m.bytes_from_str().decode() == "bar"
 
-    assert doc(m.bytes_from_str) == "bytes_from_str() -> {}".format(
-        "str" if env.PY2 else "bytes"
+    assert (
+        doc(m.bytes_from_str)
+        == f'bytes_from_str() -> {"str" if env.PY2 else "bytes"}'
     )
 
 
@@ -331,9 +332,7 @@ def test_non_converting_constructors():
         for move in [True, False]:
             with pytest.raises(TypeError) as excinfo:
                 m.nonconverting_constructor(t, v, move)
-            expected_error = "Object of type '{}' is not an instance of '{}'".format(
-                type(v).__name__, t
-            )
+            expected_error = f"Object of type '{type(v).__name__}' is not an instance of '{t}'"
             assert str(excinfo.value) == expected_error
 
 
@@ -355,7 +354,7 @@ def test_pybind11_str_raw_str():
     assert cvt({}) == u"{}"
     assert cvt({3: 4}) == u"{3: 4}"
     assert cvt(set()) == u"set([])" if env.PY2 else "set()"
-    assert cvt({3, 3}) == u"set([3])" if env.PY2 else "{3}"
+    assert cvt({3}) == u"set([3])" if env.PY2 else "{3}"
 
     valid_orig = u"Ǳ"
     valid_utf8 = valid_orig.encode("utf-8")
@@ -372,14 +371,13 @@ def test_pybind11_str_raw_str():
     malformed_utf8 = b"\x80"
     if hasattr(m, "PYBIND11_STR_LEGACY_PERMISSIVE"):
         assert cvt(malformed_utf8) is malformed_utf8
+    elif env.PY2:
+        with pytest.raises(UnicodeDecodeError):
+            cvt(malformed_utf8)
     else:
-        if env.PY2:
-            with pytest.raises(UnicodeDecodeError):
-                cvt(malformed_utf8)
-        else:
-            malformed_cvt = cvt(malformed_utf8)
-            assert type(malformed_cvt) is str
-            assert malformed_cvt == "b'\\x80'"
+        malformed_cvt = cvt(malformed_utf8)
+        assert type(malformed_cvt) is str
+        assert malformed_cvt == "b'\\x80'"
 
 
 def test_implicit_casting():
@@ -552,13 +550,13 @@ def test_memoryview_from_memory():
 
 
 def test_builtin_functions():
-    assert m.get_len([i for i in range(42)]) == 42
+    assert m.get_len(list(range(42))) == 42
     with pytest.raises(TypeError) as exc_info:
-        m.get_len(i for i in range(42))
-    assert str(exc_info.value) in [
+        m.get_len(iter(range(42)))
+    assert str(exc_info.value) in {
         "object of type 'generator' has no len()",
         "'generator' has no length",
-    ]  # PyPy
+    }
 
 
 def test_isinstance_string_types():

@@ -27,9 +27,7 @@ class TermFilter(object):
     # TermFilter
     def Field(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+        return self._tab.String(o + self._tab.Pos) if o != 0 else None
 
     # TermFilter
     def Value(self, j):
@@ -49,9 +47,7 @@ class TermFilter(object):
     # TermFilter
     def ValueLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # TermFilter
     def ValueIsNone(self):
