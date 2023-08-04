@@ -41,9 +41,7 @@ class SearchResult(object):
     # SearchResult
     def Msg(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+        return self._tab.String(o + self._tab.Pos) if o != 0 else None
 
     # SearchResult
     def ResultItems(self, j):
@@ -61,9 +59,7 @@ class SearchResult(object):
     # SearchResult
     def ResultItemsLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # SearchResult
     def ResultItemsIsNone(self):

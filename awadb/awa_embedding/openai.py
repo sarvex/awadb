@@ -20,10 +20,10 @@ class OpenAIEmbeddings(AwaEmbedding):
 
     def Embedding(self, sentence):
         tokens = []
-        if self.tokenizer != None:
-            tokens = self.tokenizer.tokenize(sentence)
-        else:
+        if self.tokenizer is None:
             tokens.append(sentence)
+        else:
+            tokens = self.tokenizer.tokenize(sentence)
         ans = self.model.create(input = tokens[0], model = DEFAULT_MODEL_NAME)["data"][0]["embedding"]
         return np.array(ans)
 
@@ -32,7 +32,10 @@ class OpenAIEmbeddings(AwaEmbedding):
         texts: Iterable[str],
         **kwargs: Any,
     ) -> List[List[float]]:
-        results: List[List[float]] = []
-        for text in texts:
-            results.append(self.model.create(input = text, model = DEFAULT_MODEL_NAME)["data"][0]["embedding"])
+        results: List[List[float]] = [
+            self.model.create(input=text, model=DEFAULT_MODEL_NAME)["data"][0][
+                "embedding"
+            ]
+            for text in texts
+        ]
         return results

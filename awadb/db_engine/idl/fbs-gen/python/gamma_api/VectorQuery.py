@@ -27,9 +27,7 @@ class VectorQuery(object):
     # VectorQuery
     def Name(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+        return self._tab.String(o + self._tab.Pos) if o != 0 else None
 
     # VectorQuery
     def Value(self, j):
@@ -49,9 +47,7 @@ class VectorQuery(object):
     # VectorQuery
     def ValueLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # VectorQuery
     def ValueIsNone(self):
@@ -89,9 +85,7 @@ class VectorQuery(object):
     # VectorQuery
     def RetrievalType(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+        return self._tab.String(o + self._tab.Pos) if o != 0 else None
 
 def Start(builder): builder.StartObject(7)
 def VectorQueryStart(builder):

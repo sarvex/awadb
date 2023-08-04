@@ -245,26 +245,22 @@ def test_no_mixed_overloads():
 
 @pytest.mark.parametrize("access", ["ro", "rw", "static_ro", "static_rw"])
 def test_property_return_value_policies(access):
-    if not access.startswith("static"):
-        obj = m.TestPropRVP()
-    else:
-        obj = m.TestPropRVP
-
-    ref = getattr(obj, access + "_ref")
+    obj = m.TestPropRVP() if not access.startswith("static") else m.TestPropRVP
+    ref = getattr(obj, f"{access}_ref")
     assert ref.value == 1
     ref.value = 2
-    assert getattr(obj, access + "_ref").value == 2
+    assert getattr(obj, f"{access}_ref").value == 2
     ref.value = 1  # restore original value for static properties
 
-    copy = getattr(obj, access + "_copy")
+    copy = getattr(obj, f"{access}_copy")
     assert copy.value == 1
     copy.value = 2
-    assert getattr(obj, access + "_copy").value == 1
+    assert getattr(obj, f"{access}_copy").value == 1
 
-    copy = getattr(obj, access + "_func")
+    copy = getattr(obj, f"{access}_func")
     assert copy.value == 1
     copy.value = 2
-    assert getattr(obj, access + "_func").value == 1
+    assert getattr(obj, f"{access}_func").value == 1
 
 
 def test_property_rvalue_policy():
@@ -499,11 +495,11 @@ def test_overload_ordering():
 
     assert "1. overload_order(arg0: int) -> int" in m.overload_order.__doc__
     assert (
-        "2. overload_order(arg0: {}) -> int".format(uni_name)
+        f"2. overload_order(arg0: {uni_name}) -> int"
         in m.overload_order.__doc__
     )
     assert (
-        "3. overload_order(arg0: {}) -> int".format(uni_name)
+        f"3. overload_order(arg0: {uni_name}) -> int"
         in m.overload_order.__doc__
     )
     assert "4. overload_order(arg0: int) -> int" in m.overload_order.__doc__
@@ -512,8 +508,8 @@ def test_overload_ordering():
         m.overload_order(1.1)
 
     assert "1. (arg0: int) -> int" in str(err.value)
-    assert "2. (arg0: {}) -> int".format(uni_name) in str(err.value)
-    assert "3. (arg0: {}) -> int".format(uni_name) in str(err.value)
+    assert f"2. (arg0: {uni_name}) -> int" in str(err.value)
+    assert f"3. (arg0: {uni_name}) -> int" in str(err.value)
     assert "4. (arg0: int) -> int" in str(err.value)
 
 

@@ -345,15 +345,13 @@ def generate_doxygen_xml(app):
         subprocess.call(["doxygen", "--version"])
         retcode = subprocess.call(["doxygen"], cwd=app.confdir)
         if retcode < 0:
-            sys.stderr.write("doxygen error code: {}\n".format(-retcode))
+            sys.stderr.write(f"doxygen error code: {-retcode}\n")
     except OSError as e:
-        sys.stderr.write("doxygen execution failed: {}\n".format(e))
+        sys.stderr.write(f"doxygen execution failed: {e}\n")
 
 
 def prepare(app):
-    with open(DIR.parent / "README.rst") as f:
-        contents = f.read()
-
+    contents = Path(DIR.parent / "README.rst").read_text()
     if app.builder.name == "latex":
         # Remove badges and stuff from start
         contents = contents[contents.find(r".. start") :]

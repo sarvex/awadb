@@ -40,9 +40,7 @@ class Doc(object):
     # Doc
     def FieldsLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # Doc
     def FieldsIsNone(self):

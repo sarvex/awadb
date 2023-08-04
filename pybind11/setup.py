@@ -24,11 +24,10 @@ VERSION_REGEX = re.compile(
 def build_expected_version_hex(matches):
     patch_level_serial = matches["PATCH"]
     serial = None
-    try:
+    with contextlib.suppress(ValueError):
         major = int(matches["MAJOR"])
         minor = int(matches["MINOR"])
-        flds = patch_level_serial.split(".")
-        if flds:
+        if flds := patch_level_serial.split("."):
             patch = int(flds[0])
             level = None
             if len(flds) == 1:
@@ -40,10 +39,8 @@ def build_expected_version_hex(matches):
                     if level_serial.startswith(level):
                         serial = int(level_serial[len(level) :])
                         break
-    except ValueError:
-        pass
     if serial is None:
-        msg = 'Invalid PYBIND11_VERSION_PATCH: "{}"'.format(patch_level_serial)
+        msg = f'Invalid PYBIND11_VERSION_PATCH: "{patch_level_serial}"'
         raise RuntimeError(msg)
     return (
         "0x"
@@ -78,18 +75,13 @@ with io.open("include/pybind11/detail/common.h", encoding="utf8") as f:
     matches = dict(VERSION_REGEX.findall(f.read()))
 cpp_version = "{MAJOR}.{MINOR}.{PATCH}".format(**matches)
 if version != cpp_version:
-    msg = "Python version {} does not match C++ version {}!".format(
-        version, cpp_version
-    )
+    msg = f"Python version {version} does not match C++ version {cpp_version}!"
     raise RuntimeError(msg)
 
 version_hex = matches.get("HEX", "MISSING")
 expected_version_hex = build_expected_version_hex(matches)
 if version_hex != expected_version_hex:
-    msg = "PYBIND11_VERSION_HEX {} does not match expected value {}!".format(
-        version_hex,
-        expected_version_hex,
-    )
+    msg = f"PYBIND11_VERSION_HEX {version_hex} does not match expected value {expected_version_hex}!"
     raise RuntimeError(msg)
 
 
