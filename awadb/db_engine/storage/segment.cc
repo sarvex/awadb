@@ -215,7 +215,7 @@ int Segment::Init(std::string name, BlockType block_type,
   if (block_type == BlockType::VectorBlockType && compressor) {
     item_len = compressor->GetCompressLen();
   }
-  if (ftruncate(base_fd_, seg_header_size_ + item_len * max_size_)) {
+  if (ftruncate(base_fd_, seg_header_size_ + static_cast<unsigned long>(item_len) * max_size_)) {
     close(base_fd_);
     LOG(ERROR) << "truncate file error:" << strerror(errno);
     return IO_ERR;
