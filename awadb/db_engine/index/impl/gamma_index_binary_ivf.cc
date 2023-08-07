@@ -253,7 +253,7 @@ int GammaIndexBinaryIVF::Indexing() {
     for (size_t i = 0; i < headers.Size(); ++i) {
       memcpy((void *)(train_vec + offset), (void *)headers.Get(i),
              sizeof(char) * raw_d * lens[i]);
-      offset += raw_d * lens[i];
+      offset += static_cast<unsigned long>(raw_d) * lens[i];
     }
   }
 
