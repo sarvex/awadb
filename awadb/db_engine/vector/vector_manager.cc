@@ -334,7 +334,7 @@ int VectorManager::AddRTVecsToIndex(bool &index_is_dirty) {
                    element_size * raw_d * lens[i]);
 
             if (raw_vec->MetaInfo()->DataType() == VectorValueType::BINARY) {
-              offset += raw_d * lens[i];
+              offset += static_cast<unsigned long>(raw_d) * lens[i];
             } else {
               offset += sizeof(float) * raw_d * lens[i];
             }
